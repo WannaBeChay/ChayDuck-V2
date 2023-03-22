@@ -1,0 +1,24 @@
+{
+  "clientId": "CLIENT-ID",
+  "token": "TOKEN",
+  "apiKey": "API_KEY",
+
+  "parentOpened": "828426273453899797",
+  "Category1": "Technical Problem",
+  "Category2": "Game Problem",
+  "Category3": "Staff Report",
+
+  "roleSupport": "CHANNEL_ID",
+  "newUserRole": "CHANNEL_ID",
+  
+  "logsTicket": "CHANNEL_ID",
+  "ticketChannel": "CHANNEL_ID",
+
+  "suggestionChannel": "CHANNEL_ID",
+
+  "channels": {
+    "channellog": "CHANNEL_ID",
+    "welcomechannel": "CHANNEL_ID",
+	"goodbyechannel": "CHANNEL_ID"
+  }
+}
