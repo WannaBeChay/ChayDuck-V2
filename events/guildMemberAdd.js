@@ -4,10 +4,6 @@ const Welcomer = require('../structures/Welcomer.js');
 module.exports = {
   name: 'guildMemberAdd',
   async execute(member, client) {
-
-    let logChannel = client.channels.cache.get(config.channels.channellog);
-    if (member.user.bot) return;
-
     let welChannel = client.channels.cache.get(config.channels.welcomechannel);
 
     await member.roles.add(config.roles.newUserRole);
