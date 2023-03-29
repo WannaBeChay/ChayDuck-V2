@@ -1,5 +1,10 @@
 const fs = require('fs');
 const ms = require('ms');
+const chalk = require('chalk');
+//const McPing = require('mc-ping-updated');
+//const ping = require('mcping-js');
+const util = require('minecraft-server-util');
+
 const {
   Client,
   Collection,
@@ -9,6 +14,7 @@ const {
   AuditLogEvent,
   Events,
 } = require('discord.js');
+
 
 const config = require('./config.json');
 
@@ -87,43 +93,49 @@ client.on('ready', async () => {
   setInterval(updateStatus, 1000);
 });
 
-//XP
-client.on('messageCreate', function (message) {
+client.on('ready', async () => {
+  const channel = client.channels.cache.get(client.config.MinecraftChannel);
 
-  if (message.author.bot) return;
-  var addXP = Math.floor(Math.random() * 5) + 2;
-  if (!xpfile[message.author.id]) {
-    xpfile[message.author.id] = {
-      xp: 0,
-      level: 0,
-      reqxp: 50
-    }
-
-    fs.writeFile("./xp.json", JSON.stringify(xpfile), function (err) {
-      if (err) console.log(err)
-    })
-  } else {
-    xpfile[message.author.id].xp += addXP
-    //console.log(xpfile[message.author.id].xp)
-    //console.log(addXP)
-    if (xpfile[message.author.id].xp > xpfile[message.author.id].reqxp) {
-      //xpfile[message.author.id].xp -= 
-      xpfile[message.author.id].reqxp *= 3.5 //xp que é preciso aumentar
-      xpfile[message.author.id].reqxp = Math.floor(xpfile[message.author.id].reqxp) //reqxp volta
-      xpfile[message.author.id].level += 1 // Adicionar level
-      xpfile[message.author.id].reqxp // retirar xp
-
-      // Find the user's rank
-      const sortedXP = Object.entries(xpfile).sort((a, b) => b[1].xp - a[1].xp);
-      const userRank = sortedXP.findIndex(([id]) => id === message.author.id) + 1;
-
-      message.reply("Now you are on Level **" + xpfile[message.author.id].level + "**! Your rank is **#" + userRank + "**.")//.then(message => message.delete({timeout: "1000000"}))
-    }
-
-    fs.writeFile("./xp.json", JSON.stringify(xpfile), function (err) {
-      if (err) console.log(err)
-    })
-  }
+  const options = {
+    sessionID: 1,
+    enableSRV: true
+  };
+  console.log(chalk.green('[Minecraft Server Status]') + chalk.cyan(' Sent the widget..'))
+  let lastMessage;
+  setInterval(() => {
+    util.queryFull('localhost', 25565, options).then((result) => {
+      let playerList = result.players.list.join(", ");
+      if (!playerList) {
+        playerList = "No players online";
+      }
+  
+      const embed = new Discord.MessageEmbed()
+        .setAuthor({ name: `SERVER_NAME`, iconURL: "" })
+        .setTitle(`${result.hostIP} ◾️ ${result.hostPort} ◾️ 👥${result.players.online}/${result.players.max}`)
+        .setDescription(`**${playerList}**`)
+  
+      if (!lastMessage) {
+        channel.send({ embeds: [embed] }).then(message => {
+          lastMessage = message;
+        })
+      } else {
+        lastMessage.edit({ embeds: [embed] });
+      }
+    }).catch((error) => {
+  
+      const embed = new Discord.MessageEmbed()
+        .setAuthor({ name: `SERVER_NAME`, iconURL: "" })
+        .setTitle(`SERVER_IP ◾️ SERVER_PORT ◾️ 👥OFFLINE`)
+  
+      if (!lastMessage) {
+        channel.send({ embeds: [embed] }).then(message => {
+          lastMessage = message;
+        })
+      } else {
+        lastMessage.edit({ embeds: [embed] });
+      }
+    });
+  }, 15000);
 });
 
 client.login(require('./config.json').token);

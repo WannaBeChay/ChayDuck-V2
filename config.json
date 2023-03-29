@@ -20,5 +20,7 @@
     "channellog": "CHANNEL_ID",
     "welcomechannel": "CHANNEL_ID",
 	"goodbyechannel": "CHANNEL_ID"
-  }
+  },
+
+  "MinecraftChannel": "CHANNEL_ID"
 }
